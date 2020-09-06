@@ -394,7 +394,7 @@ class SimpleCov::Formatter::Codecov
     )
     response = retry_request(req, https)
     if (!response.nil? && !response.code.empty?) || response.code == '400'
-      puts red(response&.body)
+      puts red(response.body)
       return false
     end
 
@@ -415,19 +415,21 @@ class SimpleCov::Formatter::Codecov
     )
     req.body = report
     res = retry_request(req, https)
-    if res&.body == ''
-      {
-        'uploaded' => true,
-        'url' => reports_url,
-        'meta' => {
-          'status' => res.code
-        },
-        'message' => 'Coverage reports upload successfully'
-      }.to_json
-    else
-      puts [black('-> '), 'Could not upload reports via v4 API, defaulting to v2'].join(' ')
-      puts red(res&.body || 'nil')
-      nil
+    if !res.nil?
+      if res.body == ''
+        {
+          'uploaded' => true,
+          'url' => reports_url,
+          'meta' => {
+            'status' => res.code
+          },
+          'message' => 'Coverage reports upload successfully'
+        }.to_json
+      else
+        puts [black('-> '), 'Could not upload reports via v4 API, defaulting to v2'].join(' ')
+        puts red(res.body || 'nil')
+        nil
+      end
     end
   end
 
