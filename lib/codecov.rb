@@ -300,10 +300,10 @@ class SimpleCov::Formatter::Codecov
   end
 
   def retry_request(req, https)
-    retries = 3
+    retries = 5
     begin
       response = https.request(req)
-    rescue Timeout::Error, SocketError => e
+    rescue Errno::ETIMEDOUT, Timeout::Error, SocketError => e
       retries -= 1
 
       if retries.zero?
@@ -395,7 +395,7 @@ class SimpleCov::Formatter::Codecov
     response = retry_request(req, https)
     if !response.nil?
       if response.code.nil? || response.code.empty? || response.code == '400'
-        puts red(response.body)
+        puts red(response.body || nil)
         return false
       end
     end
