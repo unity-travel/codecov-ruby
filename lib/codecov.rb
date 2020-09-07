@@ -454,7 +454,7 @@ class SimpleCov::Formatter::Codecov
     )
     req.body = report
     res = retry_request(req, https)
-    if res && res.body
+    if !res.nil? && res && res.body
       return res.body
     end
   end
